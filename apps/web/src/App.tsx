@@ -7,6 +7,7 @@
 // } from "media-react";
 // import { Grid, Lightbox, ReelSwiper } from "media-ui-react";
 // import type { MediaItem } from "media-core";
+// import Loader from "./component/Loader";
 
 // const API_KEY = import.meta.env.VITE_PEXELS_API_KEY as string | undefined;
 
@@ -37,13 +38,20 @@
 //     hasNextPage,
 //     loadMore,
 //   } = useMediaSearch(query);
-//   const { data: videoItems } = useVideoSearch(query);
+//   const {
+//     data: videoItems,
+//     loading: videoLoading,
+//     hasNextPage: hasMoreVideos,
+//     loadMore: loadMoreVideos,
+//   } = useVideoSearch(query);
 //   const { trackView, trackDownload } = useMediaEvents();
 //   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 //   const [reelIndex, setReelIndex] = useState(0);
+//   const [imageLoading, setImageLoading] = useState(true);
 
 //   const handleOpen = (index: number) => {
 //     setActiveIndex(index);
+//     setImageLoading(true);
 //     if (items?.[index]) trackView(items[index].id);
 //   };
 
@@ -99,21 +107,20 @@
 //           {error && (
 //             <p className="text-red-400 text-sm mb-4">Error: {error.message}</p>
 //           )}
-//           {loading && !items && (
-//             <p className="text-neutral-500 text-sm">Loading...</p>
-//           )}
+//           {loading && !items && <Loader label="Loading media..." />}
 
 //           {items && (
 //             <Grid
 //               items={items}
 //               hasMore={hasNextPage}
 //               onLoadMore={loadMore}
-//               renderItem={(item: MediaItem, index) => (
+// renderItem={(item: MediaItem, index) => (
 //                 <img
 //                   src={item.thumbnailUrl}
 //                   alt={item.alt ?? ""}
-//                   className="h-fit w-full object-cover rounded-lg cursor-pointer transition-opacity duration-150 hover:opacity-80"
+//                   className="w-full rounded-lg object-cover cursor-pointer transition-opacity duration-150 hover:opacity-80"
 //                   onClick={() => handleOpen(index)}
+//                   loading="lazy"
 //                 />
 //               )}
 //             />
@@ -121,7 +128,7 @@
 //         </div>
 
 //         {/* Right column: Reels, visually separated in its own panel */}
-//         {videoItems && videoItems.length > 0 && (
+//         {(videoItems && videoItems.length > 0) || videoLoading ? (
 //           <aside className="hidden lg:block w-[300px] shrink-0 ml-8">
 //             <div className="sticky top-6 bg-neutral-900 border border-neutral-800 rounded-2xl p-3">
 //               <h2 className="text-sm font-semibold uppercase tracking-wide text-neutral-400 px-1 mb-3">
@@ -135,43 +142,49 @@
 //                   scrollSnapType: "y mandatory",
 //                 }}
 //               >
-//                 <ReelSwiper
-//                   items={videoItems}
-//                   activeIndex={reelIndex}
-//                   onActiveChange={setReelIndex}
-//                   renderItem={(item: MediaItem) => (
-//                     <div
-//                       style={{
-//                         height: 400,
-//                         scrollSnapAlign: "start",
-//                         display: "flex",
-//                         alignItems: "center",
-//                         justifyContent: "center",
-//                         position: "relative",
-//                       }}
-//                     >
-//                       <video
-//                         src={item.url}
-//                         poster={item.thumbnailUrl}
-//                         style={{ maxHeight: "100%" }}
-//                         className="rounded-lg"
-//                         controls
-//                         autoPlay
-//                         muted
-//                         loop
-//                         onPlay={() => trackView(item.id)}
-//                       />
-//                     </div>
-//                   )}
-//                 />
+//                 {videoLoading && !videoItems ? (
+//                   <Loader label="Loading reels..." />
+//                 ) : (
+//                   <ReelSwiper
+//                     items={videoItems ?? []}
+//                     activeIndex={reelIndex}
+//                     onActiveChange={setReelIndex}
+//                     hasMore={hasMoreVideos}
+//                     onLoadMore={loadMoreVideos}
+//                     renderItem={(item: MediaItem) => (
+//                       <div
+//                         style={{
+//                           height: 400,
+//                           scrollSnapAlign: "start",
+//                           display: "flex",
+//                           alignItems: "center",
+//                           justifyContent: "center",
+//                           position: "relative",
+//                         }}
+//                       >
+//                         <video
+//                           src={item.url}
+//                           poster={item.thumbnailUrl}
+//                           style={{ maxHeight: "100%" }}
+//                           className="rounded-lg"
+//                           controls
+//                           autoPlay
+//                           muted
+//                           loop
+//                           onPlay={() => trackView(item.id)}
+//                         />
+//                       </div>
+//                     )}
+//                   />
+//                 )}
 //               </div>
 //             </div>
 //           </aside>
-//         )}
+//         ) : null}
 //       </div>
 
 //       {/* On small screens the panel above is hidden; show Reels stacked below the grid instead */}
-//       {videoItems && videoItems.length > 0 && (
+//       {(videoItems && videoItems.length > 0) || videoLoading ? (
 //         <div
 //           className="lg:hidden mx-auto px-6 pb-10"
 //           style={{ maxWidth: 1180 }}
@@ -187,38 +200,44 @@
 //               scrollSnapType: "y mandatory",
 //             }}
 //           >
-//             <ReelSwiper
-//               items={videoItems}
-//               activeIndex={reelIndex}
-//               onActiveChange={setReelIndex}
-//               renderItem={(item: MediaItem) => (
-//                 <div
-//                   style={{
-//                     height: 400,
-//                     scrollSnapAlign: "start",
-//                     display: "flex",
-//                     alignItems: "center",
-//                     justifyContent: "center",
-//                     position: "relative",
-//                   }}
-//                 >
-//                   <video
-//                     src={item.url}
-//                     poster={item.thumbnailUrl}
-//                     style={{ maxHeight: "100%" }}
-//                     className="rounded-lg"
-//                     controls
-//                     autoPlay
-//                     muted
-//                     loop
-//                     onPlay={() => trackView(item.id)}
-//                   />
-//                 </div>
-//               )}
-//             />
+//             {videoLoading && !videoItems ? (
+//               <Loader label="Loading reels..." />
+//             ) : (
+//               <ReelSwiper
+//                 items={videoItems ?? []}
+//                 activeIndex={reelIndex}
+//                 onActiveChange={setReelIndex}
+//                 hasMore={hasMoreVideos}
+//                 onLoadMore={loadMoreVideos}
+//                 renderItem={(item: MediaItem) => (
+//                   <div
+//                     style={{
+//                       height: 400,
+//                       scrollSnapAlign: "start",
+//                       display: "flex",
+//                       alignItems: "center",
+//                       justifyContent: "center",
+//                       position: "relative",
+//                     }}
+//                   >
+//                     <video
+//                       src={item.url}
+//                       poster={item.thumbnailUrl}
+//                       style={{ maxHeight: "100%" }}
+//                       className="rounded-lg"
+//                       controls
+//                       autoPlay
+//                       muted
+//                       loop
+//                       onPlay={() => trackView(item.id)}
+//                     />
+//                   </div>
+//                 )}
+//               />
+//             )}
 //           </div>
 //         </div>
-//       )}
+//       ) : null}
 
 //       {/*
 //         Lightbox: fully styled here in the app via className slots (the
@@ -230,9 +249,13 @@
 //       <Lightbox
 //         items={items ?? []}
 //         activeIndex={activeIndex}
-//         onClose={() => setActiveIndex(null)}
+//         onClose={() => {
+//           setActiveIndex(null);
+//           setImageLoading(true);
+//         }}
 //         onNavigate={(next) => {
 //           setActiveIndex(next);
+//           setImageLoading(true);
 //           const item = items?.[next];
 //           if (item) trackView(item.id);
 //         }}
@@ -241,12 +264,16 @@
 //         closeButtonClassName="fixed right-5 top-5 z-[60] flex h-10 w-10 items-center justify-center rounded-full bg-black/60 text-xl text-white transition hover:bg-black/80"
 //         prevButtonClassName="fixed left-5 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-3xl text-white transition hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-30"
 //         nextButtonClassName="fixed right-5 top-1/2 z-[60] flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-black/60 text-3xl text-white transition hover:bg-black/80 disabled:cursor-not-allowed disabled:opacity-30"
-//         renderContent={(item: MediaItem) => (
+// renderContent={(item: MediaItem) => (
 //           <div className="flex flex-col items-center gap-4">
+//             {imageLoading && <Loader label="Loading image..." />}
 //             <img
 //               src={item.url}
 //               alt={item.alt ?? ""}
-//               className="max-h-[75vh] max-w-[90vw] rounded-lg object-contain shadow-2xl"
+//               onLoad={() => setImageLoading(false)}
+//               className={`max-h-[75vh] max-w-[90vw] rounded-lg object-contain shadow-2xl transition-opacity duration-300 ${
+//                 imageLoading ? "opacity-0" : "opacity-100"
+//               }`}
 //             />
 
 //             <div className="flex items-center gap-4 text-white">
@@ -269,6 +296,8 @@
 //     </div>
 //   );
 // }
+
+
 import React, { useState } from "react";
 import {
   MediaProvider,
@@ -379,11 +408,13 @@ function SearchScreen() {
               items={items}
               hasMore={hasNextPage}
               onLoadMore={loadMore}
+              containerClassName="columns-2 sm:columns-3 lg:columns-4 gap-3 [column-fill:_balance]"
+              itemClassName="mb-3 break-inside-avoid"
               renderItem={(item: MediaItem, index) => (
                 <img
                   src={item.thumbnailUrl}
                   alt={item.alt ?? ""}
-                  className="h-fit w-full object-cover rounded-lg cursor-pointer transition-opacity duration-150 hover:opacity-80"
+                  className="w-full h-auto rounded-lg cursor-pointer transition-opacity duration-150 hover:opacity-80"
                   onClick={() => handleOpen(index)}
                 />
               )}
