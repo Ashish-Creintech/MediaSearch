@@ -1,0 +1,15 @@
+{
+  "name": "media-sdk-monorepo",
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "tsc -b tsconfig.base.json"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  }
+}

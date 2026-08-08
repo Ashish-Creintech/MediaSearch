@@ -1,0 +1,12 @@
+{
+  "name": "media-ui-native",
+  "version": "0.1.0",
+  "private": true,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "dependencies": {},
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "_comment": "react and react-native are NOT installed yet -- this package is still a stub. Add them as peerDependencies + devDependencies when you actually build this out, e.g. npm install --save-peer react react-native"
+}
