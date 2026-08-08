@@ -18,7 +18,7 @@ export function Grid<T extends WithId>({ renderItem, ...options }: GridProps<T>)
   return (
     <div {...getGridProps()}>
       {items.map((item, index) => (
-        <div {...getItemProps(item)}>{renderItem(item, index)}</div>
+        <div  className="flex flex-col gap-5" {...getItemProps(item)}>{renderItem(item, index)}</div>
       ))}
       <div {...getSentinelProps()} />
     </div>

@@ -16,6 +16,7 @@ export interface UseLightboxOptions<T extends WithId> {
 export function useLightbox<T extends WithId>({ items, activeIndex, onClose, onNavigate }: UseLightboxOptions<T>) {
   const overlayRef = useRef<HTMLElement | null>(null);
   const isOpen = activeIndex !== null;
+  console.log("useLightbox called with activeIndex:", activeIndex, "isOpen:", isOpen, "items:", items);
   const activeItem = isOpen ? items[activeIndex as number] ?? null : null;
 
   useEffect(() => {
