@@ -7,7 +7,6 @@
 // } from "media-react";
 // import { Grid, Lightbox, ReelSwiper } from "media-ui-react";
 // import type { MediaItem } from "media-core";
-// import Loader from "./component/Loader";
 
 // const API_KEY = import.meta.env.VITE_PEXELS_API_KEY as string | undefined;
 
@@ -297,7 +296,6 @@
 //   );
 // }
 
-
 import React, { useState } from "react";
 import {
   MediaProvider,
@@ -307,6 +305,8 @@ import {
 } from "media-react";
 import { Grid, Lightbox, ReelSwiper } from "media-ui-react";
 import type { MediaItem } from "media-core";
+import Loader from "./component/Loader";
+import GridSkeleton from "./component/GridSkeleton";
 
 const API_KEY = import.meta.env.VITE_PEXELS_API_KEY as string | undefined;
 
@@ -337,7 +337,11 @@ function SearchScreen() {
     hasNextPage,
     loadMore,
   } = useMediaSearch(query);
-  const { data: videoItems, hasNextPage: hasMoreVideos, loadMore: loadMoreVideos } = useVideoSearch(query);
+  const {
+    data: videoItems,
+    hasNextPage: hasMoreVideos,
+    loadMore: loadMoreVideos,
+  } = useVideoSearch(query);
   const { trackView, trackDownload } = useMediaEvents();
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [reelIndex, setReelIndex] = useState(0);
@@ -358,13 +362,16 @@ function SearchScreen() {
         }}
       >
         {/* Left column: search + results grid */}
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 relative">
+          <h1 className="text-xl font-semibold absolute top-0 right-5 tracking-tight text-neutral-100">
+            Media Search
+          </h1>
           <form
             onSubmit={(e) => {
               e.preventDefault();
               setQuery(inputValue.trim());
             }}
-            className="mb-6"
+            className="mb-6 fixed top-0.5 z-50"
           >
             <div className="relative w-full max-w-md">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">
@@ -386,9 +393,6 @@ function SearchScreen() {
           </form>
 
           <div className="flex items-center justify-between mb-4">
-            <h1 className="text-xl font-semibold tracking-tight text-neutral-100">
-              Media Search
-            </h1>
             {query && (
               <span className="text-sm text-neutral-500">
                 results for “{query}”
@@ -399,9 +403,7 @@ function SearchScreen() {
           {error && (
             <p className="text-red-400 text-sm mb-4">Error: {error.message}</p>
           )}
-          {loading && !items && (
-            <p className="text-neutral-500 text-sm">Loading...</p>
-          )}
+          {loading && !items && <GridSkeleton />}
 
           {items && (
             <Grid
